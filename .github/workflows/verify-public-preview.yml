@@ -1,0 +1,36 @@
+name: Verify public Pricewise preview
+on:
+  push:
+    branches: [ui-preview]
+    paths-ignore: [deployment-status.json, verification-screenshot.png]
+permissions:
+  contents: write
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    env:
+      PREVIEW_URL: https://rawcdn.githack.com/mdfarhan-builds/buyhatke/${{ github.sha }}/index.html
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install browser test library
+        run: npm install --prefix /tmp/pricewise-browser --no-audit --no-fund --ignore-scripts @playwright/test@1.61.1
+      - name: Check public page and interactions
+        env:
+          NODE_PATH: /tmp/pricewise-browser/node_modules
+        run: node .github/scripts/verify-public-preview.cjs
+      - name: Record public verification result
+        if: always()
+        run: |
+          if [ ! -f deployment-status.json ]; then
+            node -e 'require("fs").writeFileSync("deployment-status.json",JSON.stringify({verified:false,url:process.env.PREVIEW_URL,message:"Preview verification could not start.",checked_at:new Date().toISOString()},null,2)+"\n")'
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add deployment-status.json
+          if [ -f verification-screenshot.png ]; then git add verification-screenshot.png; fi
+          git commit -m 'Record public preview verification'
+          git push origin HEAD:ui-preview
