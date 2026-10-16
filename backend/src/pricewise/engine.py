@@ -8,6 +8,7 @@ from .config import Settings
 from .connectors import FeedSnapshot, RetailerConnector
 from .matching import exact_match
 from .models import Comparison, Coverage, FeedOffer, Offer, Product, Step
+from .scraper import live_compare
 from .urls import RETAILERS, ProductURL, Retailer
 
 logger = logging.getLogger(__name__)
@@ -76,15 +77,7 @@ async def compare(url: ProductURL, snapshot: FeedSnapshot, settings: Settings, n
     source_connector = next(connector for connector in connectors if connector.retailer.id == url.retailer.id)
     source = await source_connector.resolve(url)
     if source is None:
-        reason = snapshot.reason or "Price currently unavailable — verification required. This product link is not present in the authorized feed; its exact identity cannot be verified."
-        return Comparison(
-            status="unavailable", source_retailer=url.retailer.name, product=None,
-            offers=[missing_offer(retailer, reason, "authorized_feed" if snapshot.feed else "unconfigured", url.canonical_url if retailer.id == url.retailer.id else None) for retailer in RETAILERS],
-            best_offer_id=None, coverage=Coverage(checked=int(source_connector.configured), supported=len(RETAILERS), verified=0, retailers=[url.retailer.name] if source_connector.configured else [], configured=configured),
-            steps=[Step(id="url", label="Product URL validated", status="complete"), Step(id="identity", label="Exact product identity unavailable", status="unavailable"), Step(id="prices", label="Authorized retailer prices unavailable", status="unavailable")],
-            message="No verified match is available. Connect an authorized source containing this exact product to compare real prices.",
-            data_mode="authorized_feed" if snapshot.feed else "unconfigured", generated_at=now,
-        )
+        return await live_compare(url, now=now)
 
     async def lookup(connector: RetailerConnector) -> Offer:
         entries = await connector.candidates(source.product)

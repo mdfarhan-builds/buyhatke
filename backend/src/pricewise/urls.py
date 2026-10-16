@@ -27,6 +27,8 @@ class ProductURL:
     retailer: Retailer
     product_id: str
     canonical_url: str
+    raw_url: str = ""
+    title_slug: str = ""
 
     @property
     def key(self) -> str:
@@ -57,12 +59,19 @@ def validate_product_url(raw: str) -> ProductURL:
     path = parts.path.rstrip("/")
     product_id: str | None = None
     query = ""
+    title_slug = ""
     if retailer.id == "amazon":
+        slug_match = re.search(r"^/([^/]+)/(?:dp|gp/product)", path)
+        if slug_match:
+            title_slug = re.sub(r"[-_]+", " ", slug_match.group(1)).strip()
         match = re.search(r"/(?:dp|gp/product)/([A-Za-z0-9]{10})(?:/|$)", path)
         if match:
             product_id = match.group(1).upper()
             path = f"/dp/{product_id}"
     elif retailer.id == "flipkart":
+        slug_match = re.search(r"^/([^/]+)/p/", path)
+        if slug_match:
+            title_slug = re.sub(r"[-_]+", " ", slug_match.group(1)).strip()
         match = re.search(r"/p/(itm[a-zA-Z0-9]+)(?:/|$)", path)
         pid = parse_qs(parts.query).get("pid", [None])[0]
         if match and pid and re.fullmatch(r"[A-Za-z0-9]{8,40}", pid):
@@ -71,10 +80,16 @@ def validate_product_url(raw: str) -> ProductURL:
         elif match:
             product_id = match.group(1).lower()
     elif retailer.id in ("croma", "reliance"):
+        slug_match = re.search(r"^/([^/]+)/p/", path)
+        if slug_match:
+            title_slug = re.sub(r"[-_]+", " ", slug_match.group(1)).strip()
         match = re.search(r"/p/([0-9]{3,20})(?:/|$)", path)
         if match:
             product_id = match.group(1)
     else:
+        slug_match = re.search(r"^/(?:product/)?([^/]+)", path)
+        if slug_match:
+            title_slug = re.sub(r"[-_]+", " ", slug_match.group(1)).strip()
         match = re.search(r"/p/([0-9]{2,20})(?:/|$)", path)
         slug = re.fullmatch(r"/product/([a-zA-Z0-9][a-zA-Z0-9_-]{3,200})", path)
         if match:
@@ -83,4 +98,4 @@ def validate_product_url(raw: str) -> ProductURL:
             product_id = slug.group(1).lower()
     if product_id is None:
         raise ValueError("Use a direct product page link, rather than a store homepage, search, or shortened URL.")
-    return ProductURL(retailer, product_id, urlunsplit(("https", hostname, path, query, "")))
+    return ProductURL(retailer, product_id, urlunsplit(("https", hostname, path, query, "")), raw_url=raw, title_slug=title_slug)

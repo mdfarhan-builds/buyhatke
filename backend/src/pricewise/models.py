@@ -21,7 +21,7 @@ def valid_gtin(value: str) -> bool:
 
 
 class StrictModel(BaseModel):
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="ignore")
 
 
 class Product(StrictModel):
@@ -132,6 +132,22 @@ class CompareRequest(StrictModel):
     url: str = Field(min_length=1, max_length=2048)
 
 
+class PricePoint(StrictModel):
+    date: str
+    price: Decimal
+    retailer: str
+
+
+class PriceHistory(StrictModel):
+    lowest: Decimal
+    highest: Decimal
+    average: Decimal
+    current: Decimal
+    drop_percentage: int
+    verdict: str
+    history: list[PricePoint]
+
+
 class Offer(StrictModel):
     id: str
     retailer: str
@@ -147,7 +163,7 @@ class Offer(StrictModel):
     match_confidence: int = Field(default=0, ge=0, le=100)
     availability: Literal["in_stock", "out_of_stock", "unknown"] = "unknown"
     conditional_discounts: list[ConditionalDiscount] = Field(default_factory=list)
-    source_kind: Literal["authorized_feed", "unconfigured"]
+    source_kind: str = "live_comparison"
     cached: bool = False
 
 
@@ -174,5 +190,6 @@ class Comparison(StrictModel):
     coverage: Coverage
     steps: list[Step]
     message: str
-    data_mode: Literal["authorized_feed", "unconfigured"]
+    data_mode: str = "live_comparison"
     generated_at: datetime
+    price_history: PriceHistory | None = None
