@@ -6,6 +6,8 @@ A focused product comparison application: paste a supported retailer link, verif
 
 To see the UI on a phone or computer through a public URL, follow [the Render + Vercel deployment guide](docs/deployment.md). `render.yaml` configures a free API preview, and `vercel.json` configures the Next.js frontend. Hosting deployment must be completed in your accounts; a cloud-environment snapshot or screenshot is not a public website.
 
+You can deploy the interface on Vercel first without an API URL. It displays the homepage and explicitly reports that comparisons are unavailable. To enable comparisons, deploy the Render API, set `PRICEWISE_API_URL` in Vercel, and redeploy.
+
 ## Run locally
 
 Install Node.js 24+, [uv](https://docs.astral.sh/uv/), and Python 3.12. From the repository root:

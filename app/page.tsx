@@ -90,7 +90,7 @@ export default function Home() {
 
   useEffect(() => {
     const controller = new AbortController();
-    fetch("/api/retailers", { signal: controller.signal }).then(response => response.ok ? response.json() : null).then(data => { if (data?.retailers) { setConfiguredStores(data.retailers.filter((r: { configured: boolean }) => r.configured).map((r: { name: string }) => r.name)); setCoverageStatus("known"); } else setCoverageStatus("unavailable"); }).catch(() => { if (!controller.signal.aborted) setCoverageStatus("unavailable"); });
+    fetch("/api/retailers", { signal: controller.signal }).then(async response => { const data = await response.json(); return response.ok ? data : null; }).then(data => { if (data?.retailers) { setConfiguredStores(data.retailers.filter((r: { configured: boolean }) => r.configured).map((r: { name: string }) => r.name)); setCoverageStatus("known"); } else setCoverageStatus("unavailable"); }).catch(() => { if (!controller.signal.aborted) setCoverageStatus("unavailable"); });
     return () => { controller.abort(); abortRef.current?.abort(); };
   }, []);
 

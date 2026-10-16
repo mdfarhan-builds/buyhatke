@@ -1,10 +1,7 @@
 import type { NextConfig } from "next";
 
 const configuredOrigin = process.env.PRICEWISE_API_URL?.trim();
-if (process.env.VERCEL && !configuredOrigin) {
-  throw new Error("Set PRICEWISE_API_URL to your actual Render API HTTPS origin in Vercel, then redeploy. See docs/deployment.md.");
-}
-let apiOrigin = "http://127.0.0.1:8000";
+let apiOrigin: string | null = process.env.VERCEL ? null : "http://127.0.0.1:8000";
 if (configuredOrigin) {
   const parsed = new URL(configuredOrigin);
   if (!["http:", "https:"].includes(parsed.protocol) || parsed.username || parsed.password || parsed.pathname !== "/" || parsed.search || parsed.hash || (process.env.VERCEL && parsed.protocol !== "https:")) {
@@ -16,7 +13,11 @@ if (configuredOrigin) {
 const config: NextConfig = {
   poweredByHeader: false,
   async rewrites() {
-    return [{ source: "/api/:path*", destination: `${apiOrigin}/api/:path*` }];
+    return {
+      beforeFiles: apiOrigin ? [{ source: "/api/:path*", destination: `${apiOrigin}/api/:path*` }] : [],
+      afterFiles: [],
+      fallback: []
+    };
   },
   async headers() {
     return [{ source: "/:path*", headers: [

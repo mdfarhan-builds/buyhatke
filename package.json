@@ -11,7 +11,8 @@
     "start": "next start --hostname 0.0.0.0",
     "typecheck": "tsc --noEmit",
     "test:api": "uv run --project backend pytest backend/tests -q",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "test:ui-preview": "node scripts/check-ui-preview.mjs"
   },
   "dependencies": {
     "next": "15.5.15",
