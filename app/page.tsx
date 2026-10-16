@@ -7,6 +7,8 @@ import ComparisonResults from "@/components/ComparisonResults";
 import PhoneVisual from "@/components/PhoneVisual";
 import type { Comparison } from "@/lib/types";
 
+const uiOnlyPreview = process.env.NEXT_PUBLIC_PRICEWISE_UI_ONLY === "1";
+
 const stores = [
   { id: "amazon", name: "Amazon", domains: ["amazon.in", "www.amazon.in", "m.amazon.in"], label: "amazon", className: "amazon-word" },
   { id: "flipkart", name: "Flipkart", domains: ["flipkart.com", "www.flipkart.com", "m.flipkart.com"], label: "Flipkart", className: "flipkart-word" },
@@ -89,6 +91,7 @@ export default function Home() {
   });
 
   useEffect(() => {
+    if (uiOnlyPreview) { setCoverageStatus("unavailable"); return; }
     const controller = new AbortController();
     fetch("/api/retailers", { signal: controller.signal }).then(async response => { const data = await response.json(); return response.ok ? data : null; }).then(data => { if (data?.retailers) { setConfiguredStores(data.retailers.filter((r: { configured: boolean }) => r.configured).map((r: { name: string }) => r.name)); setCoverageStatus("known"); } else setCoverageStatus("unavailable"); }).catch(() => { if (!controller.signal.aborted) setCoverageStatus("unavailable"); });
     return () => { controller.abort(); abortRef.current?.abort(); };
@@ -106,6 +109,7 @@ export default function Home() {
     let parsed: URL;
     try { parsed = new URL(url.trim()); } catch { setError("Paste a complete product link, starting with https://."); inputRef.current?.focus(); return; }
     if (parsed.protocol !== "https:" || parsed.username || parsed.password || (parsed.port && parsed.port !== "443") || !stores.some(store => store.domains.includes(parsed.hostname.toLowerCase()))) { setError("Use an HTTPS product link from Amazon India, Flipkart, Croma, Reliance Digital, or Vijay Sales."); inputRef.current?.focus(); return; }
+    if (uiOnlyPreview) { setError("This is an interface preview. Product and price verification require a connected comparison backend."); return; }
     setLoading(true); setResult(null);
     setTimeout(() => document.getElementById("comparison")?.scrollIntoView({ behavior: reduced ? "instant" : "smooth", block: "start" }), 80);
     const controller = new AbortController(); abortRef.current = controller;

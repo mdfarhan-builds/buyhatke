@@ -8,6 +8,8 @@ To see the UI on a phone or computer through a public URL, follow [the Render + 
 
 You can deploy the interface on Vercel first without an API URL. It displays the homepage and explicitly reports that comparisons are unavailable. To enable comparisons, deploy the Render API, set `PRICEWISE_API_URL` in Vercel, and redeploy.
 
+`npm run build:static-preview` exports a portable interface preview to the ignored `.artifacts/static-site` directory. It builds in a temporary directory, preserves the normal application build, and makes no API requests. Its comparison form explicitly reports that a connected backend is required. This export is only for viewing the UI; it does not run FastAPI or compare prices.
+
 ## Run locally
 
 Install Node.js 24+, [uv](https://docs.astral.sh/uv/), and Python 3.12. From the repository root:

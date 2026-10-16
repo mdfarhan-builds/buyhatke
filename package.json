@@ -8,6 +8,7 @@
     "dev:web": "next dev --hostname 0.0.0.0",
     "dev:api": "backend/.venv/bin/uvicorn pricewise.main:app --host 127.0.0.1 --port 8000 --reload --reload-dir backend/src",
     "build": "next build",
+    "build:static-preview": "node scripts/build-static-preview.mjs",
     "start": "next start --hostname 0.0.0.0",
     "typecheck": "tsc --noEmit",
     "test:api": "uv run --project backend pytest backend/tests -q",

@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: "Pricewise — One product. Every verified price.",
   description: "Paste a product link. Compare exact variants across supported Indian retailers, with transparent verification and no sponsored rankings.",
   applicationName: "Pricewise",
-  icons: { icon: "/icon.svg" }
+  icons: { icon: process.env.NEXT_PUBLIC_PRICEWISE_UI_ONLY === "1" ? "./icon.svg" : "/icon.svg" }
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

@@ -2,6 +2,16 @@
 
 This repository contains the deployment configuration. Import it into your own Render and Vercel accounts; no hosting credentials belong in the repository or chat. Publishing a Codex environment does not publish this website.
 
+## Published interface preview
+
+A verified public UI preview is available at:
+
+https://rawcdn.githack.com/mdfarhan-builds/buyhatke/27bde0228202dffedc8c8d5695d4f09ddf290cf8/index.html
+
+This immutable export is stored on the repository's `ui-preview` branch and served by raw.githack's CDN. The host may ask first-time visitors to click **Open the page**. The public page, CSS/JavaScript, browser interactions, and mobile layout were checked by the branch's GitHub Actions workflow; its result is in `deployment-status.json` on that branch. This preview makes no API calls and explicitly reports that a comparison backend is required. It does not provide live prices.
+
+The normal Next.js/FastAPI application remains on `main`. To publish a later static UI revision, run `npm run build:static-preview`, validate `.artifacts/static-site`, and publish a new immutable artifact revision. This existing URL remains tied to the exported version above; normal source updates do not change it.
+
 ## 1. Deploy the API on Render
 
 **Want to see the UI immediately?** You can deploy the Vercel interface in step 2 first, without setting `PRICEWISE_API_URL`. It builds and displays the homepage. API calls explicitly report that the comparison service is not connected; they do not return prices. Deploy Render and add its URL later to enable comparisons.
