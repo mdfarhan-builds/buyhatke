@@ -1,0 +1,33 @@
+{
+  "name": "pricewise",
+  "version": "1.0.0",
+  "private": true,
+  "engines": { "node": "24.x" },
+  "scripts": {
+    "dev": "concurrently --kill-others -n web,api -c blue,magenta \"npm:dev:web\" \"npm:dev:api\"",
+    "dev:web": "next dev --hostname 0.0.0.0",
+    "dev:api": "backend/.venv/bin/uvicorn pricewise.main:app --host 127.0.0.1 --port 8000 --reload --reload-dir backend/src",
+    "build": "next build",
+    "start": "next start --hostname 0.0.0.0",
+    "typecheck": "tsc --noEmit",
+    "test:api": "uv run --project backend pytest backend/tests -q",
+    "test:e2e": "playwright test"
+  },
+  "dependencies": {
+    "next": "15.5.15",
+    "react": "19.1.4",
+    "react-dom": "19.1.4",
+    "framer-motion": "12.38.0",
+    "lucide-react": "0.468.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.61.1",
+    "@tailwindcss/postcss": "4.1.18",
+    "@types/node": "22.19.15",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "concurrently": "9.2.1",
+    "tailwindcss": "4.1.18",
+    "typescript": "5.9.3"
+  }
+}

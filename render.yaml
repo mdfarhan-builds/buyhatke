@@ -1,0 +1,15 @@
+# Single-process preview API. No paid databases or retailer feeds are provisioned.
+services:
+  - type: web
+    name: pricewise-api
+    runtime: python
+    plan: free
+    rootDir: backend
+    buildCommand: uv sync --frozen --no-dev
+    startCommand: .venv/bin/uvicorn pricewise.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.14"
+      - key: PRICEWISE_ENVIRONMENT
+        value: preview
