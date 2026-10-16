@@ -102,7 +102,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         except ValueError as exc:
             raise HTTPException(status_code=422, detail=str(exc)) from exc
         snapshot = await repository.load()
-        cache_key = hashlib.sha256(f"{url.key}:{snapshot.fingerprint}:{settings.max_age_seconds}".encode()).hexdigest()
+        cache_key = hashlib.sha256(f"v3:{url.key}:{snapshot.fingerprint}:{settings.max_age_seconds}".encode()).hexdigest()
         stored = await infrastructure.cache_get(cache_key)
         comparison = None
         if stored:
