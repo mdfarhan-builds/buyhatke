@@ -1,0 +1,13 @@
+{
+  "verified": true,
+  "url": "https://rawcdn.githack.com/mdfarhan-builds/buyhatke/27bde0228202dffedc8c8d5695d4f09ddf290cf8/index.html",
+  "checked_at": "2026-10-16T02:57:36.449Z",
+  "checks": [
+    "public_html_200",
+    "css_and_javascript",
+    "browser_interactions",
+    "mobile_layout",
+    "no_api_requests",
+    "no_browser_errors"
+  ]
+}
