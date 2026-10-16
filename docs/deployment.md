@@ -5,7 +5,7 @@ This repository contains the deployment configuration. Import it into your own R
 ## 1. Deploy the API on Render
 
 1. Sign in at https://dashboard.render.com/ and choose **New → Blueprint**.
-2. Connect GitHub and select `mfprince3524/buyhatke`, branch `main`.
+2. Connect GitHub and select `mdfarhan-builds/buyhatke`, branch `main`.
 3. Use the repository's `render.yaml` and create the Blueprint. It declares one **Free** Python web service, `pricewise-api`, and no paid databases.
 4. Wait until deployment succeeds. Open the service and copy its actual public HTTPS URL.
 5. Append `/api/health` to that URL and open it. The response should have `status: "ok"`, `data_mode: "unconfigured"`, and a message explaining that no authorized retailer feed is connected.
@@ -28,7 +28,7 @@ If the Blueprint UI is unavailable, create a **Web Service** from the same repos
 
 ## 2. Deploy the interface on Vercel
 
-1. Sign in at https://vercel.com/new and import `mfprince3524/buyhatke`.
+1. Sign in at https://vercel.com/new and import `mdfarhan-builds/buyhatke`.
 2. Select the `main` branch, framework **Next.js**, repository root **`.`**, and Node.js **24.x**. Leave the output directory at the framework default. `vercel.json` supplies the install/build commands.
 3. Before pressing Deploy, add **`PRICEWISE_API_URL`**. Paste the actual Render service HTTPS URL copied in step 1. Use the origin only: no `/api`, credentials, query, or fragment. Do not enter a placeholder URL. Enable the variable for the Production and Preview environments you intend to use.
 4. Click **Deploy**, wait for success, and open the actual `.vercel.app` URL Vercel gives you. This is the website you can open on a phone or computer.
